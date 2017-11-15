@@ -26,6 +26,8 @@ const reporter = require('postcss-reporter');
 const swagger = require('gulp-swagger-js-codegen');
 const ms = require('ms');
 const opn = require('opn');
+const slate = require('gulp-node-slate');
+const debug = require('gulp-debug');
 
 const config = require('./config');
 
@@ -221,9 +223,11 @@ gulp.task('static', () => {
     .pipe(gulp.dest('build'));
 });
 
+// Creates api.js for client usage
 gulp.task('swagger', () => {
   return gulp
-    .src('swagger-api.yaml')
+    .src('build/.swagger/api.yaml')
+    .pipe(debug({title: 'swagger'}))
     .pipe(
       swagger({
         type: 'node',
@@ -233,5 +237,19 @@ gulp.task('swagger', () => {
         }
       })
     )
-    .pipe(gulp.dest('build'));
+    .pipe(gulp.dest('build/api.js'));
 });
+
+// Creates HTML docs
+gulp.task('slate', () => {
+  return gulp.src([]).pipe(
+    slate({
+      source: 'docs',
+      build: 'build/docs'
+    })
+  );
+});
+
+// gulp.task('docs', ['swagger', 'slate'], () => {
+//   return;
+// });
